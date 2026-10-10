@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Форматтер</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #61dafb; margin-bottom: 5px; }
+        .subtitle { color: #888; margin-bottom: 20px; font-size: 14px; }
+        .container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            height: 60vh;
+        }
+        .box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #9cdcfe;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+        textarea {
+            flex: 1;
+            background-color: #252526;
+            color: #d4d4d4;
+            border: 1px solid #3e3e42;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+            tab-size: 4;
+        }
+        textarea:focus { border-color: #007acc; }
+        .controls {
+            margin: 15px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 24px;
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        button:hover { background-color: #1177bb; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        button.secondary { background-color: #3e3e42; }
+        button.secondary:hover { background-color: #505055; }
+        .rules {
+            max-width: 1200px;
+            width: 100%;
+            background-color: #252526;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid #3e3e42;
+        }
+        .rules h3 { margin-top: 0; color: #61dafb; }
+        .rules ul { padding-left: 20px; margin-bottom: 0; }
+        .rules li { margin-bottom: 6px; }
+        .success { color: #89d185; font-weight: bold; }
+        .priority { color: #dcdcaa; font-weight: bold; }
+        .final { color: #c586c0; font-weight: bold; }
+        code {
+            background-color: #1e1e1e;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            color: #ce9178;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>C++ Форматтер</h1>
+    <div class="subtitle">Исправление ошибок оформления</div>
+
+    <div class="controls">
+        <button onclick="formatCode()">⚡ Форматировать код</button>
+        <button class="secondary" onclick="copyCode()">📋 Копировать результат</button>
+        <button class="secondary" onclick="loadExample()">📄 Загрузить проблемный пример</button>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <label>Исходный код </label>
+            <textarea id="input" placeholder="Вставьте ваш C++ код сюда..."></textarea>
+        </div>
+        <div class="box">
+            <label>Отформатированный код <span id="status" style="color: #89d185; font-weight: normal;"></span></label>
+            <textarea id="output" readonly placeholder="Здесь появится красивый код..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        class CppFormatter {
+            static format(code) {
+                if (!code.trim()) return '';
+                let hasInclude = /#include\s*<[^>]+>/.test(code);
+                if (hasInclude) {
+                    code = code.replace(/#include\s*<[^>]+>\s*\n?/g, '');
+                    code = '#include <bits/stdc++.h>\n' + code;
+                }
+
+                let lines = code.split('\n');
+                let result = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i];
+                    
+                    line = line.replace(/\s+$/, '');
+                    
+                    if (line.trim() === '') {
+                        result.push('');
+                        continue;
+                    }
+                    line = line.replace(/>\s*>/g, '>>');
+                    line = line.replace(/<\s*</g, '<<');
+                    line = line.replace(/\b(cin|cout)\s*(<<|>>)\s*/g, '$1 $2 ');
+                    line = line.replace(/\s*(<<|>>)\s*\b(cin|cout)\b/g, ' $1 $2');
+                    line = line.replace(/([^<>\s])(<<|>>)/g, '$1 $2');
+                    line = line.replace(/(<<|>>)([^<>\s])/g, '$1 $2');
+                    line = line.replace(/#\s*include\s*<\s*([^>]+?)\s*>/g, '#include <$1>');
+                    line = line.replace(/(\w)\s+\(/g, '$1(');
+                    line = line.replace(/\(\s+/g, '(');
+                    line = line.replace(/\s+\)/g, ')');
+                    line = line.replace(/\b(for|while|if|switch|catch)\s*\(/g, '$1 (');
+                    if (!line.trim().startsWith('#include')) {
+                        line = line.replace(/([^=\s])\s*==\s*([^=\s])/g, '$1 == $2');
+                        line = line.replace(/([^=\s])\s*!=\s*([^=\s])/g, '$1 != $2');
+                        line = line.replace(/([^=\s])\s*<=\s*([^=\s])/g, '$1 <= $2');
+                        line = line.replace(/([^=\s])\s*>=\s*([^=\s])/g, '$1 >= $2');
+                        line = line.replace(/([^=\s])\s*=\s*([^=\s])/g, '$1 = $2');
+                        line = line.replace(/([^<>\s])\s*<\s*([^=\s])/g, '$1 < $2');
+                        line = line.replace(/([^<>\s])\s*>\s*([^=\s])/g, '$1 > $2');
+                        line = line.replace(/([^+\s])\s*\+\s*([^+\s])/g, '$1 + $2');
+                        line = line.replace(/([^-+\s])\s*-\s*([^-+\s])/g, '$1 - $2');
+                        line = line.replace(/([^\*\s])\s*\*\s*([^\*\s])/g, '$1 * $2');
+                        line = line.replace(/([^\/\s])\s*\/\s*([^\/\s])/g, '$1 / $2');
+                    }
+                    line = line.replace(/(\w)\s*\+\+/g, '$1++');
+                    line = line.replace(/(\w)\s*--/g, '$1--');
+                    line = line.replace(/\bfor\s*\(\s*([^:;]+?)\s*:\s*([^;)]+?)\s*\)/g, 'for ($1 : $2)');
+                    line = line.replace(/,([^\s])/g, ', $1');
+                    line = line.replace(/\s+;/g, ';');
+                    
+                    if (!line.match(/^\s*(for|while|if|switch)\s*\(/)) {
+                        line = line.replace(/;\s+([a-zA-Z_])/g, ';\n$1');
+                    }
+                    if (line.trim() === '{' && result.length > 0) {
+                        let prev = result[result.length - 1];
+                        result[result.length - 1] = prev.replace(/\s*$/, ' {');
+                        continue;
+                    }
+                    line = line.replace(/(\S)\{/g, '$1 {');
+                    if (line.trim().match(/^(public|private|protected):/)) {
+                        line = ' ' + line.trim();
+                    }
+                    result.push(line);
+                }
+                let finalResult = [];
+                for (let i = 0; i < result.length; i++) {
+                    let line = result[i];
+                    finalResult.push(line);
+                    if (line.includes('{')) {
+                        if (i + 1 < result.length && result[i+1].trim() === '') {
+                            i++;
+                        }
+                    }
+                }
+                
+                let cleanedResult = [];
+                for (let i = 0; i < finalResult.length; i++) {
+                    if (finalResult[i].trim() === '}') {
+                        while (cleanedResult.length > 0 && cleanedResult[cleanedResult.length - 1].trim() === '') {
+                            cleanedResult.pop();
+                        }
+                    }
+                    cleanedResult.push(finalResult[i]);
+                }
+                let indentedResult = [];
+                let indentLevel = 0;
+                for (let line of cleanedResult) {
+                    let trimmed = line.trim();
+                    if (!trimmed) {
+                        indentedResult.push('');
+                        continue;
+                    }
+                    
+                    if (trimmed.startsWith('}')) {
+                        indentLevel = Math.max(0, indentLevel - 1);
+                    }
+                    
+                    let indent = '    '.repeat(indentLevel);
+                    indentedResult.push(indent + trimmed);
+                    
+                    if (trimmed.endsWith('{')) {
+                        indentLevel++;
+                    }
+                }
+                
+                let finalCode = indentedResult.join('\n');
+                finalCode = finalCode.replace(/>\s+>/g, '>>');
+                finalCode = finalCode.replace(/<\s+</g, '<<');
+                finalCode = finalCode.replace(/!\s+=/g, '!=');
+                finalCode = finalCode.replace(/=\s+=/g, '==');
+                finalCode = finalCode.replace(/>\s+=/g, '>=');
+                finalCode = finalCode.replace(/<\s+=/g, '<=');
+                finalCode = finalCode.replace(/\b(cin|cout)\s*(<<|>>)\s*/g, '$1 $2 ');
+                finalCode = finalCode.replace(/\s*(<<|>>)\s*\b(cin|cout)\b/g, ' $1 $2');
+                finalCode = finalCode.replace(/([^<>\s])(<<|>>)/g, '$1 $2');
+                finalCode = finalCode.replace(/(<<|>>)([^<>\s])/g, '$1 $2');
+                finalCode = finalCode.replace(/([^=\s])\s*==\s*([^=\s])/g, '$1 == $2');
+                finalCode = finalCode.replace(/([^=\s])\s*!=\s*([^=\s])/g, '$1 != $2');
+                finalCode = finalCode.replace(/([^=\s])\s*<=\s*([^=\s])/g, '$1 <= $2');
+                finalCode = finalCode.replace(/([^=\s])\s*>=\s*([^=\s])/g, '$1 >= $2');
+                finalCode = finalCode.replace(/^(\s*)(.*)/gm, (match, indent, content) => {
+                    return indent + content.replace(/  +/g, ' ');
+                });
+                return finalCode;
+            }
+        }
+
+        function formatCode() {
+            const input = document.getElementById('input').value;
+            if (!input.trim()) return;
+            
+            const formatted = CppFormatter.format(input);
+            document.getElementById('output').value = formatted;
+            
+            const status = document.getElementById('status');
+            status.textContent = '✓ Успешно отформатировано';
+            setTimeout(() => { status.textContent = ''; }, 2000);
+        }
+
+        function copyCode() {
+            const output = document.getElementById('output');
+            if (!output.value) return;
+            
+            navigator.clipboard.writeText(output.value).then(() => {
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = '✅ Скопировано!';
+                btn.style.backgroundColor = '#238636';
+                setTimeout(() => { 
+                    btn.innerText = originalText; 
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            });
+        }
+
+        function loadExample() {
+            document.getElementById('input').value = `#include < iostream>
+#include < string>
+using namespace std;
+
+int main() {
+    int a, b;
+    cin>>  a > >b;
+    if (a ! = b){
+         if (a = = b) {
+          if (a > = b) {
+             if (a < = b){
+                    cout < < a;
+                }
+            }
+        }
+    }
+    return 0;
+}`;
+        }
+    </script>
+</body>
+</html>
