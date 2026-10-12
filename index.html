@@ -6,123 +6,306 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C++ Форматтер</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #0d0d0d;
+            color: #c8c8c8;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 20px;
         }
-        h1 { color: #61dafb; margin-bottom: 5px; }
-        .subtitle { color: #888; margin-bottom: 20px; font-size: 14px; }
+
+        header {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: #000000;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .logo::before {
+            content: '<>';
+            font-size: 14px;
+            color: #aaaaaa;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: #666666;
+            margin-bottom: 20px;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 0 16px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 18px;
+            background-color: #1a1a1a;
+            color: #d0d0d0;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: #252525;
+            border-color: #444444;
+            color: #ffffff;
+        }
+
+        button:active {
+            background-color: #2e2e2e;
+            transform: translateY(0);
+        }
+
+        button.primary {
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: 600;
+        }
+
+        button.primary:hover {
+            background-color: #e0e0e0;
+            border-color: #e0e0e0;
+            color: #000000;
+        }
+
         .container {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             height: 60vh;
         }
+
         .box {
             flex: 1;
             display: flex;
             flex-direction: column;
+            background-color: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            overflow: hidden;
         }
+
         label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #9cdcfe;
-            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 16px;
+            color: #777777;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
         }
+
+        label span {
+            color: #888888;
+            font-weight: normal;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 12px;
+        }
+
         textarea {
             flex: 1;
-            background-color: #252526;
+            background-color: #141414;
             color: #d4d4d4;
-            border: 1px solid #3e3e42;
-            border-radius: 6px;
-            padding: 12px;
+            border: none;
+            padding: 16px;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 14px;
             resize: none;
             outline: none;
-            line-height: 1.5;
+            line-height: 1.6;
             tab-size: 4;
         }
-        textarea:focus { border-color: #007acc; }
-        .controls {
-            margin: 15px 0;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+
+        textarea::placeholder {
+            color: #444444;
         }
-        button {
-            padding: 10px 24px;
-            background-color: #0e639c;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s;
+
+        textarea:focus {
+            background-color: #161616;
         }
-        button:hover { background-color: #1177bb; transform: translateY(-1px); }
-        button:active { transform: translateY(0); }
-        button.secondary { background-color: #3e3e42; }
-        button.secondary:hover { background-color: #505055; }
+
         .rules {
-            max-width: 1200px;
+            max-width: 1400px;
             width: 100%;
-            background-color: #252526;
+            background-color: #141414;
             padding: 20px;
             border-radius: 6px;
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 16px;
+            font-size: 13px;
             line-height: 1.6;
-            border: 1px solid #3e3e42;
+            border: 1px solid #2a2a2a;
         }
-        .rules h3 { margin-top: 0; color: #61dafb; }
-        .rules ul { padding-left: 20px; margin-bottom: 0; }
-        .rules li { margin-bottom: 6px; }
-        .success { color: #89d185; font-weight: bold; }
-        .priority { color: #dcdcaa; font-weight: bold; }
-        .final { color: #c586c0; font-weight: bold; }
+
+        .rules h3 {
+            margin-top: 0;
+            color: #cccccc;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .rules ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+
+        .rules li {
+            margin-bottom: 6px;
+            color: #aaaaaa;
+        }
+
+        .success {
+            color: #aaaaaa;
+            font-weight: normal;
+        }
+
+        .priority {
+            color: #cccccc;
+            font-weight: normal;
+        }
+
+        .final {
+            color: #cccccc;
+            font-weight: normal;
+        }
+
         code {
             background-color: #1e1e1e;
             padding: 2px 6px;
             border-radius: 3px;
             font-family: 'Consolas', monospace;
-            color: #ce9178;
-            font-size: 13px;
+            color: #bbbbbb;
+            font-size: 12px;
+        }
+
+        .status-bar {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 16px;
+            padding: 10px 16px;
+            background-color: #000000;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-bar::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: #555555;
+            border-radius: 50%;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444444;
         }
     </style>
 </head>
 <body>
 
-    <h1>C++ Форматтер</h1>
-    <div class="subtitle">Исправление ошибок оформления</div>
+    <header>
+        <div class="logo">
+            <h1>C++ Форматтер</h1>
+        </div>
+        <div class="subtitle" style="margin: 0;">Исправление ошибок оформления</div>
+    </header>
 
     <div class="controls">
-        <button onclick="formatCode()">⚡ Форматировать код</button>
-        <button class="secondary" onclick="copyCode()">📋 Копировать результат</button>
-        <button class="secondary" onclick="loadExample()">📄 Загрузить проблемный пример</button>
+        <button class="secondary" onclick="loadExample()"> Загрузить пример</button>
+        <button class="secondary" onclick="copyCode()">📋 Копировать</button>
+        <button class="primary" onclick="formatCode()"> Форматировать</button>
     </div>
 
     <div class="container">
         <div class="box">
-            <label>Исходный код </label>
+            <label>Исходный код</label>
             <textarea id="input" placeholder="Вставьте ваш C++ код сюда..."></textarea>
         </div>
         <div class="box">
-            <label>Отформатированный код <span id="status" style="color: #89d185; font-weight: normal;"></span></label>
-            <textarea id="output" readonly placeholder="Здесь появится красивый код..."></textarea>
+            <label>Отформатированный код <span id="status"></span></label>
+            <textarea id="output" readonly placeholder="Здесь появится результат..."></textarea>
         </div>
     </div>
+
+    <div class="status-bar">Готов к работе</div>
 
     <script>
         class CppFormatter {
@@ -261,7 +444,7 @@
             document.getElementById('output').value = formatted;
             
             const status = document.getElementById('status');
-            status.textContent = '✓ Успешно отформатировано';
+            status.textContent = '✓ Успешно';
             setTimeout(() => { status.textContent = ''; }, 2000);
         }
 
@@ -272,11 +455,9 @@
             navigator.clipboard.writeText(output.value).then(() => {
                 const btn = event.target;
                 const originalText = btn.innerText;
-                btn.innerText = '✅ Скопировано!';
-                btn.style.backgroundColor = '#238636';
+                btn.innerText = '✅ Скопировано';
                 setTimeout(() => { 
                     btn.innerText = originalText; 
-                    btn.style.backgroundColor = '';
                 }, 2000);
             });
         }
